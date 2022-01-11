@@ -6,4 +6,13 @@ tempo_config:
 time_signature:
   beats_per_bar: 4
   beat_unit: 4
-  
+layers:
+  - number: 1
+    active: True
+    channel: 0
+    note_range_config:
+      upper_key: "C3"
+      lower_key: "G6"
+    velocity_range_config:
+      max_velocity: 100
+      min_velocity: 20

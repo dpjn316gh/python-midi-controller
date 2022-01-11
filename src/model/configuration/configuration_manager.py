@@ -8,6 +8,7 @@ from model.configuration.performance_config import PerformanceConfig
 
 
 def load_performances_config():
+    # TODO SINGLETON
     performances_config = []
     for file in os.listdir(os.path.join(CONFIG_FOLDER, GeneralConfig().performance_folder)):
         if file.endswith("yml") or file.endswith("yaml"):

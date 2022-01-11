@@ -1,0 +1,9 @@
+number: 1
+name: The first Virtual Midi Controller performance
+tempo_config:
+  min_bpm: 60
+  max_bpm: 70
+time_signature:
+  beats_per_bar: 4
+  beat_unit: 4
+  

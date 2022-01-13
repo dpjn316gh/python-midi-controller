@@ -9,7 +9,8 @@ class LayerConfig(ConfZ):
     number: int
     active: bool
     channel: int
-    transportation: Optional[int]
-    fix_velocity: Optional[int]
     note_range_config: NoteRangeConfig
     velocity_range_config: VelocityRangeConfig
+    octave: Optional[int] = 0
+    transportation: Optional[int] = 0
+    fix_velocity: Optional[int] = 100

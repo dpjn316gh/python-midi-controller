@@ -4,6 +4,7 @@
 #
 """Collection of MIDI filter classes."""
 
+from typing import Any
 from rtmidi.midiconstants import (BANK_SELECT_LSB, BANK_SELECT_MSB, CHANNEL_PRESSURE,
                                   CONTROLLER_CHANGE, NOTE_ON, NOTE_OFF, PROGRAM_CHANGE)
 
@@ -27,8 +28,12 @@ class MidiFilter(object):
     event_types = ()
 
     def __init__(self, *args, **kwargs):
+        self.successor_filter = None
         self.args = args
         self.__dict__.update(kwargs)
+
+    def set_successor_filter(self, successor_filter: Any):
+        self.successor_filter = successor_filter
 
     def process(self, events):
         """Process incoming events.
@@ -42,20 +47,6 @@ class MidiFilter(object):
 
     def match(self, msg):
         return msg[0] & 0xF0 in self.event_types
-
-
-class Transpose(MidiFilter):
-    """Transpose note on/off events."""
-
-    event_types = (NOTE_ON, NOTE_OFF)
-
-    def process(self, events):
-        for msg, timestamp in events:
-            if self.match(msg):
-                msg[0] = msg[0] | max(0, min(15, self.channel))
-                msg[1] = max(0, min(127, msg[1] + self.transpose)) & 0x7F
-
-            yield msg, timestamp
 
 
 class SendAnotherChannel(MidiFilter):
@@ -75,16 +66,38 @@ class SendAnotherChannel(MidiFilter):
             yield msg, timestamp
 
 
+class Transpose(MidiFilter):
+    """Transpose note on/off events."""
+
+    event_types = (NOTE_ON, NOTE_OFF)
+
+    def process(self, events):
+        for msg, timestamp in events:
+            if self.match(msg):
+                msg[0] = msg[0] | max(0, min(15, self.channel))
+                msg[1] = max(0, min(127, msg[1] + self.transpose)) & 0x7F
+                if self.successor_filter != None:
+                    return self.successor_filter.process([(msg, timestamp)])
+                else:
+                    return msg, timestamp
+
+
 class NoteRange(MidiFilter):
     
     event_types = (NOTE_ON, NOTE_OFF)
     
     def process(self, events):
-        for msg, timestamp in events:
+        copied_events = []
+        for e in events:
+            copied_events.append(tuple((e[0].copy(), e[1])))
+
+        for msg, timestamp in copied_events:
             if self.match(msg):
                 if max(0, min(127, self.lower)) & 0x7F <= msg[1] <= max(0, min(127, self.upper)) & 0x7F:
                     msg[0] = msg[0] | max(0, min(15, self.channel))
-                    yield msg, timestamp
+                    if self.successor_filter != None:
+                        return self.successor_filter.process([(msg, timestamp)])                        
+                    return msg, timestamp
 
 
 class VelocityRange(MidiFilter):
@@ -96,9 +109,9 @@ class VelocityRange(MidiFilter):
             if self.match(msg):
                 msg[0] = msg[0] | max(0, min(15, self.channel))
                 if msg[0] & NOTE_ON == NOTE_ON and max(0, min(127, self.lower)) & 0x7F <= msg[2] <= max(0, min(127, self.upper)) & 0x7F:
-                    yield msg, timestamp
+                    return msg, timestamp
                 if msg[0] & NOTE_OFF == NOTE_OFF and msg[2] & 0x7F == 0x00:
-                    yield msg, timestamp
+                    return msg, timestamp
 
 
 class PassThru(MidiFilter):

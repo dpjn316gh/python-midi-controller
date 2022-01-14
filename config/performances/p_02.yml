@@ -1,5 +1,5 @@
-number: 1
-name: The first Virtual Midi Controller performance
+number: 2
+name: The second Virtual Midi Controller performance
 tempo_config:
   min_bpm: 60
   max_bpm: 70
@@ -21,26 +21,17 @@ layers:
     channel: 1
     note_range_config:
       lower_key: "C3"
-      upper_key: "G9"
+      upper_key: "B5"
     velocity_range_config:
       max_velocity: 127
       min_velocity: 0
   - number: 3
     active: True
     channel: 2
-    octave: 2
+    octave: -2
     note_range_config:
-      lower_key: "C3"
+      lower_key: "C6"
       upper_key: "G9"
     velocity_range_config:
       max_velocity: 127
-      min_velocity: 50      
-  - number: 4
-    active: True
-    channel: 3
-    note_range_config:
-      lower_key: "C3"
-      upper_key: "G9"
-    velocity_range_config:
-      max_velocity: 127
-      min_velocity: 95      
+      min_velocity: 0        

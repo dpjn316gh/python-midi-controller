@@ -55,20 +55,11 @@ class MidiDispatcher(threading.Thread):
             processed_events = []
 
             for filter_ in self.filters:
-                processed_events = processed_events + list(filter_.process(events))
+                processed_event = filter_.process(events)
+                if processed_event != None:
+                    processed_events.append(processed_event)
             
             for event in processed_events:
-
-                if event[0][0] == 144 and event[0][2] !=0:
-                    if prev_time == 0:
-                        prev_time = event[1]
-                        curr_time = event[1]
-                    else:
-                        prev_time = curr_time
-                        curr_time = event[1]
-                    if curr_time - prev_time != 0:
-                        log.debug("Delta: @%0.6f", 60. / (curr_time - prev_time))    
-
                 log.debug("Out: @%0.6f %r", event[1], event[0])
                 self.midiout.send_message(event[0])
 

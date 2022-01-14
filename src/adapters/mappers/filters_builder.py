@@ -12,11 +12,16 @@ class FiltersBuilder:
         filters = []
         for layer in performance_config.layers:
             if layer.active:
-                filters.append(self.__build_velocity_range_filter(layer))
-                filters.append(self.__build_note_range_filter(layer))
+
+                note_range_filter = self.__build_note_range_filter(layer)
                 transpose_filter = self.__build_transpose_filter(layer)
-                if not transpose_filter is None:
-                    filters.append(transpose_filter)
+                velocity_range_filter = self.__build_velocity_range_filter(layer)
+
+                note_range_filter.set_successor_filter(transpose_filter)
+                transpose_filter.set_successor_filter(velocity_range_filter)
+
+                filters.append(note_range_filter)
+
         return filters
 
     def __build_velocity_range_filter(self, layer: LayerConfig) -> VelocityRange:
@@ -33,8 +38,6 @@ class FiltersBuilder:
 
     def __build_transpose_filter(self, layer: LayerConfig) -> Transpose:
         transpose = layer.transportation + layer.octave * 12
-        if transpose != 0:
-           return Transpose(
-               transpose=transpose,
-               channel=layer.channel)
-        return None
+        return Transpose(
+            transpose=transpose,
+            channel=layer.channel)

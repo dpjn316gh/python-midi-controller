@@ -96,7 +96,7 @@ class NoteRange(MidiFilter):
                 if max(0, min(127, self.lower)) & 0x7F <= msg[1] <= max(0, min(127, self.upper)) & 0x7F:
                     msg[0] = msg[0] | max(0, min(15, self.channel))
                     if self.successor_filter != None:
-                        return self.successor_filter.process([(msg, timestamp)])                        
+                        return self.successor_filter.process([(msg, timestamp)])
                     return msg, timestamp
 
 
@@ -120,6 +120,24 @@ class PassThru(MidiFilter):
         for msg, timestamp in events:
             msg[0] = msg[0] | max(0, min(15, self.channel))
             yield msg, timestamp
+
+
+class ControllerChange(MidiFilter):
+
+    event_types = (CONTROLLER_CHANGE,)
+
+    def __init__(self, cc, min_, max_, *args, **kwargs):
+        super(ControllerChange, self).__init__(*args, **kwargs)
+        self.cc = cc
+        self.min = min_
+        self.max = max_
+
+    def process(self, events):
+        for msg, timestamp in events:
+            if self.match(msg) and msg[1] == self.cc and self.min <= msg[2] <= self.max:
+                copied_msg = msg.copy()
+                copied_msg[0] = copied_msg[0] | max(0, min(15, self.channel))
+                return tuple((copied_msg, timestamp))
 
 
 class MapControllerValue(MidiFilter):

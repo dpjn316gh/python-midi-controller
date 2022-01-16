@@ -1,5 +1,5 @@
-number: 2
-name: The second Virtual Midi Controller performance
+number: 3
+name: Piano Strings
 tempo_config:
   min_bpm: 60
   max_bpm: 70
@@ -12,10 +12,14 @@ layers:
     channel: 0
     note_range_config:
       lower_key: "C-1"
-      upper_key: "B2"
+      upper_key: "G9"
     velocity_range_config:
       max_velocity: 127
       min_velocity: 0
+    controller_changes:
+      - continues_controller: "SUSTAIN"
+        min: 0
+        max: 127          
   - number: 2
     active: True
     channel: 1
@@ -29,17 +33,4 @@ layers:
       - continues_controller: "SUSTAIN"
         min: 0
         max: 127       
-  - number: 3
-    active: True
-    channel: 2
-    octave: -2
-    note_range_config:
-      lower_key: "C6"
-      upper_key: "G9"
-    velocity_range_config:
-      max_velocity: 127
-      min_velocity: 0
-    controller_changes:
-      - continues_controller: "SUSTAIN"
-        min: 0
-        max: 127            
+         

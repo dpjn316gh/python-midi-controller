@@ -12,11 +12,7 @@ import logging
 import sys
 import threading
 import time
-
-try:
-    import Queue as queue
-except ImportError:  # Python 3
-    import queue
+import queue
 
 from rtmidi.midiutil import open_midiport
 
@@ -25,9 +21,9 @@ log = logging.getLogger("midifilter")
 
 
 class MidiDispatcher(threading.Thread):
-    def __init__(self, midiin, midiout, *filters):
+    def __init__(self, midiins, midiout, *filters):
         super(MidiDispatcher, self).__init__()
-        self.midiin = midiin
+        self.midiins = midiins
         self.midiout = midiout
         self.filters = filters
         self._wallclock = time.time()
@@ -41,7 +37,8 @@ class MidiDispatcher(threading.Thread):
 
     def run(self):
         log.debug("Attaching MIDI input callback handler.")
-        self.midiin.set_callback(self)
+        for mi in self.midiins:
+            mi.set_callback(self)
 
         prev_time = 0
         curr_time = 0

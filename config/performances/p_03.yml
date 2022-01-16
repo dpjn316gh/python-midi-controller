@@ -33,4 +33,6 @@ layers:
       - continues_controller: "SUSTAIN"
         min: 0
         max: 127       
-         
+      - continues_controller: "VOLUME"
+        min: 0
+        max: 127  

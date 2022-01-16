@@ -25,6 +25,24 @@ filters = filters_builder.build_filters_from_performance(default_performance)
 
 print(filters)
 
+def ask_yesno(question, default=True):
+
+    yes = {'yes', 'y'}
+    no = {'no', 'n'}  # pylint: disable=invalid-name
+
+    done = False
+    print(question)
+    while not done:
+        choice = input().lower()
+        if choice in yes:
+            return True
+        elif choice in no:
+            return False
+        elif choice in '':
+            return default
+        else:
+            print("Please respond by yes or no.")
+
 # open a file
 def main():
 
@@ -32,7 +50,13 @@ def main():
     logging.basicConfig(format="%(name)s: %(levelname)s - %(message)s", level=level)
 
     try:
-        midiin, inport_name = open_midiport(None, "input")
+        midiins = []
+        while True:
+            midiin, inport_name = open_midiport(None, "input")
+            midiins.append(midiin)
+            if not ask_yesno("Would you like to add another input port (y/N)?", False):
+                break
+        
         midiout, outport_name = open_midiport(None, "output")
     except IOError as exc:
         print(exc)
@@ -41,7 +65,7 @@ def main():
         return 0
 
 
-    dispatcher = MidiDispatcher(midiin, midiout, *filters)
+    dispatcher = MidiDispatcher(midiins, midiout, *filters)
 
     print("Entering main loop. Press Control-C to exit.")
     try:

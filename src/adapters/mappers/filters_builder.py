@@ -53,6 +53,7 @@ class FiltersBuilder:
                     cc=CONTROLLER_CHANGE_MAPPER[cc.continues_controller],
                     min_=cc.min, 
                     max_=cc.max,
-                    channel=layer.channel)
+                    channel=layer.channel,
+                    from_global_channel=cc.from_global_channel)
                 )
         return controller_change_filters

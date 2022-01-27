@@ -134,11 +134,17 @@ class ControllerChange(MidiFilter):
 
     def process(self, events):
         for msg, timestamp in events:
-            if self.match(msg) and msg[1] == self.cc and self.min <= msg[2] <= self.max:
+
+            if self.match(msg) and msg[1] == self.cc and self.min <= msg[2] <= self.max and self.global_channel_verification(msg):
                 copied_msg = msg.copy()
                 copied_msg[0] = copied_msg[0] | max(0, min(15, self.channel))
                 return tuple((copied_msg, timestamp))
 
+    def global_channel_verification(self, msg):
+        if not self.from_global_channel:
+            channel = msg[0] & 0xF
+            return True if channel == self.channel else False
+        return True
 
 class MapControllerValue(MidiFilter):
     """Map controller values to min/max range."""

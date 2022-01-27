@@ -5,7 +5,7 @@ description = "Python virtual midi controller"
 authors = ["Jorge Porras <dpjn316@hotmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8.7"
 python-rtmidi = "^1.4.9"
 pyliblo = "^0.10.0"
 osc-lib = "^2.4.2"

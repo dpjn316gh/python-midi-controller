@@ -19,7 +19,16 @@ layers:
     controller_changes:
       - continues_controller: "SUSTAIN"
         min: 0
-        max: 127          
+        max: 127
+        from_global_channel: True
+      - continues_controller: "VOLUME"
+        min: 0
+        max: 127
+        from_global_channel: False
+      - continues_controller: "EXPRESSION"
+        min: 0
+        max: 127
+        from_global_channel: False
   - number: 2
     active: True
     channel: 1
@@ -32,7 +41,13 @@ layers:
     controller_changes:
       - continues_controller: "SUSTAIN"
         min: 0
-        max: 127       
+        max: 127
+        from_global_channel: True
       - continues_controller: "VOLUME"
         min: 0
-        max: 127  
+        max: 127
+        from_global_channel: False
+      - continues_controller: "EXPRESSION"
+        min: 0
+        max: 127
+        from_global_channel: False

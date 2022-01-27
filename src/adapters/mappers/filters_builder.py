@@ -1,7 +1,7 @@
 from typing import List
 from adapters.mappers.controller_change_mapper import CONTROLLER_CHANGE_MAPPER
 from adapters.mappers.note_translator import translate_note_to_midi_code
-from midifilter.filters import ControllerChange, MidiFilter, NoteRange, Transpose, VelocityRange
+from midifilter.filters import ControllerChange, MidiFilter, NoteRange, Transpose, VelocityRange, ProgramChangeFilter
 from model.configuration.layer_config import LayerConfig
 from model.configuration.performance_config import PerformanceConfig
 
@@ -24,6 +24,7 @@ class FiltersBuilder:
                 filters.append(note_range_filter)
 
                 filters = filters + self.__build_controller_change_filter_list(layer)
+                filters.append(self.__build_program_change_filter(layer))
 
         return filters
 
@@ -54,6 +55,11 @@ class FiltersBuilder:
                     min_=cc.min, 
                     max_=cc.max,
                     channel=layer.channel,
-                    from_global_channel=cc.from_global_channel)
+                    use_global_channel=cc.use_global_channel)
                 )
         return controller_change_filters
+
+    def __build_program_change_filter(self, layer: LayerConfig) -> ProgramChangeFilter:
+        return ProgramChangeFilter(
+            program=layer.program,
+            channel=layer.channel)

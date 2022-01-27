@@ -21,6 +21,8 @@ __all__ = (
     'PassThru',
 )
 
+from model.configuration.layer_config import ANY_PROGRAM
+
 
 class MidiFilter(object):
     """ABC for midi filters."""
@@ -141,10 +143,48 @@ class ControllerChange(MidiFilter):
                 return tuple((copied_msg, timestamp))
 
     def global_channel_verification(self, msg):
-        if not self.from_global_channel:
+        if not self.use_global_channel:
             channel = msg[0] & 0xF
             return True if channel == self.channel else False
         return True
+
+
+class ProgramChangeFilter(MidiFilter):
+    event_types = (PROGRAM_CHANGE,)
+
+    def __init__(self, program, *args, **kwargs):
+        super(ProgramChangeFilter, self).__init__(*args, **kwargs)
+        self.program = program
+
+    def process(self, events):
+        for msg, timestamp in events:
+            if self.match(msg) and msg[0] & 0xF == self.channel:
+                if self.program != ANY_PROGRAM:
+                    msg[1] = max(0, min(127, self.program))
+                return msg, timestamp
+
+
+class ProgramChangeToBankChange(MidiFilter):
+    event_types = (PROGRAM_CHANGE,)
+    events = []
+
+    def __init__(self, msb, lsb, program, *args, **kwargs):
+        super(ProgramChangeToBankChange, self).__init__(*args, **kwargs)
+        self.msb = msb
+        self.lsb = lsb
+        self.program = program
+
+    def process(self, events):
+        for msg, timestamp in events:
+            program_change_events = []
+            if self.match(msg):
+                channel = msg[0] & 0xC0
+                program_change_events.append(([CONTROLLER_CHANGE + channel, BANK_SELECT_MSB, self.msb], timestamp))
+                program_change_events.append(([CONTROLLER_CHANGE + channel, BANK_SELECT_LSB, self.lsb], timestamp))
+                program_change_events.append(([PROGRAM_CHANGE + channel, self.program], timestamp))
+        return program_change_events
+    ...
+
 
 class MapControllerValue(MidiFilter):
     """Map controller values to min/max range."""

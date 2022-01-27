@@ -9,7 +9,7 @@ time_signature:
 layers:
   - number: 1
     active: True
-    channel: 0
+    channel: 1
     note_range_config:
       lower_key: "C-1"
       upper_key: "G9"
@@ -17,21 +17,25 @@ layers:
       max_velocity: 127
       min_velocity: 0
     controller_changes:
+      - continues_controller: "BANK_SELECT"
+        min: 80
+        max: 81
+      - continues_controller: "BANK_SELECT_LSB"
+        min: 0
+        max: 3
       - continues_controller: "SUSTAIN"
         min: 0
         max: 127
-        from_global_channel: True
+        use_global_channel: True
       - continues_controller: "VOLUME"
         min: 0
         max: 127
-        from_global_channel: False
       - continues_controller: "EXPRESSION"
         min: 0
         max: 127
-        from_global_channel: False
   - number: 2
     active: True
-    channel: 1
+    channel: 2
     note_range_config:
       lower_key: "C3"
       upper_key: "B5"
@@ -39,15 +43,19 @@ layers:
       max_velocity: 127
       min_velocity: 0
     controller_changes:
+      - continues_controller: "BANK_SELECT"
+        min: 80
+        max: 81
+      - continues_controller: "BANK_SELECT_LSB"
+        min: 0
+        max: 3
       - continues_controller: "SUSTAIN"
         min: 0
         max: 127
-        from_global_channel: True
+        use_global_channel: True
       - continues_controller: "VOLUME"
         min: 0
         max: 127
-        from_global_channel: False
       - continues_controller: "EXPRESSION"
         min: 0
         max: 127
-        from_global_channel: False

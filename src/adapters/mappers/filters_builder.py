@@ -8,6 +8,9 @@ from model.configuration.performance_config import PerformanceConfig
 
 class FiltersBuilder:
 
+    def __init__(self):
+        self.notes_queue = []
+
     def build_filters_from_performance(self, performance_config: PerformanceConfig) -> List[MidiFilter]:
 
         filters = []
@@ -33,7 +36,9 @@ class FiltersBuilder:
             lower=layer.velocity_range_config.min_velocity,
             upper=layer.velocity_range_config.max_velocity,
             fix_velocity=layer.fix_velocity,
-            channel=layer.channel)
+            channel=layer.channel,
+            keep_note_on_until_touch_it_again=layer.keep_note_on_until_touch_it_again,
+            notes_queue=self.notes_queue)
 
     def __build_note_range_filter(self, layer: LayerConfig) -> NoteRangeFilter:
         return NoteRangeFilter(

@@ -19,6 +19,8 @@ __all__ = (
     'NoteRangeFilter',
     'VelocityRangeFilter',
     'PassThru',
+    'ControllerChangeFilter',
+    'ProgramChangeFilter',
 )
 
 from model.configuration.layer_config import ANY_PROGRAM
@@ -110,15 +112,39 @@ class VelocityRangeFilter(MidiFilter):
         for msg, timestamp in events:
             if self.match(msg):
                 msg[0] = msg[0] | max(0, min(15, self.channel))
-                if msg[0] & NOTE_ON == NOTE_ON:
+                if msg[0] & NOTE_ON == NOTE_ON and msg[2] & 0x7F != 0x00:
                     if self.fix_velocity:
-                        msg[2] = max(0, min(127, self.fix_velocity if msg[2] & 0x7F != 0x00 else 0))
-                        return msg, timestamp
+                        msg[2] = max(0, min(127, self.fix_velocity))
+                        if not self.save_note_on_event_if_apply_and_skip(msg):
+                            return msg, timestamp
+                        else:
+                            continue
                     else:
                         if max(0, min(127, self.lower)) & 0x7F <= msg[2] <= max(0, min(127, self.upper)) & 0x7F:
-                            return msg, timestamp
-                if msg[0] & NOTE_OFF == NOTE_OFF and msg[2] & 0x7F == 0x00:
+                            if not self.save_note_on_event_if_apply_and_skip(msg):
+                                return msg, timestamp
+                            else:
+                                continue
+                if msg[0] & NOTE_ON == NOTE_ON and msg[2] & 0x7F == 0x00:
+                    if self.skip_note_on_velocity_zero(msg):
+                        continue
                     return msg, timestamp
+
+    def save_note_on_event_if_apply_and_skip(self, msg):
+        if self.keep_note_on_until_touch_it_again:
+            note = ((msg[0] & 0xF) << 0x8) | msg[1]
+            if note in self.notes_queue:
+                self.notes_queue.remove(note)
+                return True
+            else:
+                self.notes_queue.append(note)
+        return False
+
+    def skip_note_on_velocity_zero(self, msg):
+        if self.keep_note_on_until_touch_it_again:
+            if ((msg[0] & 0xF) << 0x8) | msg[1] in self.notes_queue:
+                return True
+        return False
 
 
 class PassThru(MidiFilter):

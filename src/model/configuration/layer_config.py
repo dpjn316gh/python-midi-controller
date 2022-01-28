@@ -19,4 +19,5 @@ class LayerConfig(ConfZ):
     octave: Optional[int] = 0
     transportation: Optional[int] = 0
     fix_velocity: Optional[int] = None
+    keep_note_on_until_touch_it_again: Optional[bool] = False
     

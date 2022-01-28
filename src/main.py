@@ -1,7 +1,6 @@
 import logging
 import sys
 import time
-from pathlib import Path
 from adapters.mappers.filters_builder import FiltersBuilder
 
 from rtmidi.midiutil import open_midiport

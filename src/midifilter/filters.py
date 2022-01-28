@@ -14,10 +14,10 @@ __all__ = (
     'MapControllerValue',
     'MidiFilter',
     'MonoPressureToCC',
-    'Transpose',
+    'TransposeFilter',
     'SendAnotherChannel',
-    'NoteRange',
-    'VelocityRange',
+    'NoteRangeFilter',
+    'VelocityRangeFilter',
     'PassThru',
 )
 
@@ -68,7 +68,7 @@ class SendAnotherChannel(MidiFilter):
             yield msg, timestamp
 
 
-class Transpose(MidiFilter):
+class TransposeFilter(MidiFilter):
     """Transpose note on/off events."""
 
     event_types = (NOTE_ON, NOTE_OFF)
@@ -84,7 +84,7 @@ class Transpose(MidiFilter):
                     return msg, timestamp
 
 
-class NoteRange(MidiFilter):
+class NoteRangeFilter(MidiFilter):
     
     event_types = (NOTE_ON, NOTE_OFF)
     
@@ -102,7 +102,7 @@ class NoteRange(MidiFilter):
                     return msg, timestamp
 
 
-class VelocityRange(MidiFilter):
+class VelocityRangeFilter(MidiFilter):
     
     event_types = (NOTE_ON, NOTE_OFF)
     
@@ -110,8 +110,13 @@ class VelocityRange(MidiFilter):
         for msg, timestamp in events:
             if self.match(msg):
                 msg[0] = msg[0] | max(0, min(15, self.channel))
-                if msg[0] & NOTE_ON == NOTE_ON and max(0, min(127, self.lower)) & 0x7F <= msg[2] <= max(0, min(127, self.upper)) & 0x7F:
-                    return msg, timestamp
+                if msg[0] & NOTE_ON == NOTE_ON:
+                    if self.fix_velocity:
+                        msg[2] = max(0, min(127, self.fix_velocity if msg[2] & 0x7F != 0x00 else 0))
+                        return msg, timestamp
+                    else:
+                        if max(0, min(127, self.lower)) & 0x7F <= msg[2] <= max(0, min(127, self.upper)) & 0x7F:
+                            return msg, timestamp
                 if msg[0] & NOTE_OFF == NOTE_OFF and msg[2] & 0x7F == 0x00:
                     return msg, timestamp
 
@@ -124,12 +129,12 @@ class PassThru(MidiFilter):
             yield msg, timestamp
 
 
-class ControllerChange(MidiFilter):
+class ControllerChangeFilter(MidiFilter):
 
     event_types = (CONTROLLER_CHANGE,)
 
     def __init__(self, cc, min_, max_, *args, **kwargs):
-        super(ControllerChange, self).__init__(*args, **kwargs)
+        super(ControllerChangeFilter, self).__init__(*args, **kwargs)
         self.cc = cc
         self.min = min_
         self.max = max_

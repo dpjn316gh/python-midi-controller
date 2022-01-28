@@ -16,7 +16,6 @@ import queue
 
 from rtmidi.midiutil import open_midiport
 
-
 log = logging.getLogger("midifilter")
 
 
@@ -55,11 +54,10 @@ class MidiDispatcher(threading.Thread):
                 processed_event = filter_.process(events)
                 if processed_event != None:
                     processed_events.append(processed_event)
-            
+
             for event in processed_events:
                 log.debug("Out: @%0.6f %r", event[1], event[0])
                 self.midiout.send_message(event[0])
 
     def stop(self):
         self.queue.put(None)
-

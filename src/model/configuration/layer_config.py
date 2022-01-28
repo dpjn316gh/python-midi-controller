@@ -18,5 +18,5 @@ class LayerConfig(ConfZ):
     program: Optional[int] = ANY_PROGRAM
     octave: Optional[int] = 0
     transportation: Optional[int] = 0
-    fix_velocity: Optional[int] = 100
+    fix_velocity: Optional[int] = None
     

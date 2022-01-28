@@ -17,7 +17,7 @@ validate_all_configs()
 general_config = ControllerConfig()
 pc1 = load_performances_config()
 
-default_performance = next(filter(lambda x: x.number == 3, pc1))
+default_performance = next(filter(lambda x: x.number == 4, pc1))
 
 filters_builder = FiltersBuilder()
 

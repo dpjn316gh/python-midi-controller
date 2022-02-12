@@ -2,9 +2,10 @@ from unittest import TestCase
 
 from src.adapters.mappers.note_translator import translate_note_to_midi_code
 
+
 class TestMappers(TestCase):
     def test_translate_note_to_midi_code(self):
-        note = 0     
+        note = 0
         self.assertEqual(note, translate_note_to_midi_code("C-1"))
         note += 1
         self.assertEqual(note, translate_note_to_midi_code("C#-1"))
@@ -271,4 +272,4 @@ class TestMappers(TestCase):
         note += 1
         self.assertEqual(note, translate_note_to_midi_code("G9"))
 
-        self.assertEqual(127, note)  
+        self.assertEqual(127, note)

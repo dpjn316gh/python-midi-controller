@@ -1,9 +1,9 @@
 from typing import List
 
-from src.services.configuration_service.model.controller_config import ControllerConfig
-from src.services.configuration_service.model.performance_config import PerformanceConfig
-from src.services.configuration_service.ports.controller_config_service import ControllerConfigService
-from src.services.configuration_service.service import ConfigurationService
+from services.configuration_service.model.controller_config import ControllerConfig
+from services.configuration_service.model.performance_config import PerformanceConfig
+from services.configuration_service.ports.controller_config_service import ControllerConfigService
+from services.configuration_service.service import ConfigurationService
 
 
 class ConfigurationServiceImpl(ConfigurationService):

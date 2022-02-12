@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from src.adapters.mappers.note_translator import translate_note_to_midi_code
+from adapters.mappers.note_translator import translate_note_to_midi_code
 
 
 class TestMappers(TestCase):

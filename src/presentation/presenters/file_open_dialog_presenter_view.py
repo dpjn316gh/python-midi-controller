@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 
-from src.presentation.models.file_open_dialog_view_data import FileOpenDialogViewData
+from presentation.models.file_open_dialog_view_data import FileOpenDialogViewData
 
 
 class FileOpenDialogPresenterView(ABC):

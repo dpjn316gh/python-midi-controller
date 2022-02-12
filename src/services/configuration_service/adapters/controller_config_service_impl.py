@@ -4,11 +4,11 @@ from typing import List
 
 from confz import ConfZFileSource
 
-from src.services.configuration_service.adapters.confz_classes import PerformanceConfigConfZ
-from src.services.configuration_service.adapters.env_confz_classes import ControllerConfigConfZ
-from src.services.configuration_service.model.controller_config import ControllerConfig
-from src.services.configuration_service.model.performance_config import PerformanceConfig
-from src.services.configuration_service.ports.controller_config_service import ControllerConfigService
+from services.configuration_service.adapters.confz_classes import PerformanceConfigConfZ
+from services.configuration_service.adapters.env_confz_classes import ControllerConfigConfZ
+from services.configuration_service.model.controller_config import ControllerConfig
+from services.configuration_service.model.performance_config import PerformanceConfig
+from services.configuration_service.ports.controller_config_service import ControllerConfigService
 
 
 def controller_config_confz_to_controller_config(controller_config_confz: ControllerConfigConfZ) -> ControllerConfig:

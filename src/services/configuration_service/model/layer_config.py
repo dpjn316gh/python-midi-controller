@@ -2,9 +2,9 @@ from typing import Optional, List
 
 from pydantic import BaseModel
 
-from src.services.configuration_service.model.controller_change_config import ControllerChangeConfig
-from src.services.configuration_service.model.note_range_config import NoteRangeConfig
-from src.services.configuration_service.model.velocity_range_config import VelocityRangeConfig
+from services.configuration_service.model.controller_change_config import ControllerChangeConfig
+from services.configuration_service.model.note_range_config import NoteRangeConfig
+from services.configuration_service.model.velocity_range_config import VelocityRangeConfig
 
 ANY_PROGRAM = -1
 

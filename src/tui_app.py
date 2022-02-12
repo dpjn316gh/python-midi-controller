@@ -3,12 +3,12 @@ from asciimatics.exceptions import ResizeScreenError
 from asciimatics.scene import Scene
 from asciimatics.screen import Screen
 
-from src.presentation.views.file_open_dialog_view import FileOpenDialogView
-from src.presentation.views.performance_view import PerformanceView
-from src.presentation.views.menu_frame import MenuFrame
-from src.services.configuration_service.adapters.controller_config_service_impl import ControllerConfigServiceConfZ
-from src.services.configuration_service.service_impl import ConfigurationServiceImpl
-from src.services.midi_controller_service_impl import MidiControllerServiceImpl
+from presentation.views.file_open_dialog_view import FileOpenDialogView
+from presentation.views.performance_view import PerformanceView
+from presentation.views.menu_frame import MenuFrame
+from services.configuration_service.adapters.controller_config_service_impl import ControllerConfigServiceConfZ
+from services.configuration_service.service_impl import ConfigurationServiceImpl
+from services.midi_controller_service_impl import MidiControllerServiceImpl
 
 controller_configuration_service = ControllerConfigServiceConfZ()
 configuration_service = ConfigurationServiceImpl(controller_configuration_service)

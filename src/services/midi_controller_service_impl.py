@@ -1,6 +1,6 @@
-from src.services.configuration_service.model.controller_config import ControllerConfig
-from src.services.configuration_service.service import ConfigurationService
-from src.services.midi_controller_service import MidiControllerService
+from services.configuration_service.model.controller_config import ControllerConfig
+from services.configuration_service.service import ConfigurationService
+from services.midi_controller_service import MidiControllerService
 
 
 class MidiControllerServiceImpl(MidiControllerService):

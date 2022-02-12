@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from confz import ConfZDataSource
 
-from src.services.configuration_service.adapters.confz_classes import PerformanceConfigConfZ
-from src.services.configuration_service.model.performance_config import PerformanceConfig
+from services.configuration_service.adapters.confz_classes import PerformanceConfigConfZ
+from services.configuration_service.model.performance_config import PerformanceConfig
 from tests.conftest import fake_performance_configuration
 
 

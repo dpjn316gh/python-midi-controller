@@ -2,9 +2,9 @@ from asciimatics.event import KeyboardEvent
 from asciimatics.exceptions import NextScene
 from asciimatics.widgets import Frame, Layout, Button, FileBrowser
 
-from src.presentation.models.file_open_dialog_view_data import FileOpenDialogViewData
-from src.presentation.presenters.file_open_dialog_presenter import FileOpenDialogPresenter
-from src.presentation.presenters.file_open_dialog_presenter_view import FileOpenDialogPresenterView
+from presentation.models.file_open_dialog_view_data import FileOpenDialogViewData
+from presentation.presenters.file_open_dialog_presenter import FileOpenDialogPresenter
+from presentation.presenters.file_open_dialog_presenter_view import FileOpenDialogPresenterView
 
 
 class FileOpenDialogView(Frame, FileOpenDialogPresenterView):

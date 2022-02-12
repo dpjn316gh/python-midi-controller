@@ -1,6 +1,6 @@
-from src.presentation.models.file_open_dialog_view_data import FileOpenDialogViewData
-from src.presentation.presenters.file_open_dialog_presenter_view import FileOpenDialogPresenterView
-from src.services.midi_controller_service import MidiControllerService
+from presentation.models.file_open_dialog_view_data import FileOpenDialogViewData
+from presentation.presenters.file_open_dialog_presenter_view import FileOpenDialogPresenterView
+from services.midi_controller_service import MidiControllerService
 
 
 class FileOpenDialogPresenter:

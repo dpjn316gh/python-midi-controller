@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from src.services.configuration_service.model.controller_config import ControllerConfig
-from src.services.configuration_service.model.performance_config import PerformanceConfig
+from services.configuration_service.model.controller_config import ControllerConfig
+from services.configuration_service.model.performance_config import PerformanceConfig
 
 
 class ConfigurationService(ABC):

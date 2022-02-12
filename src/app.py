@@ -1,6 +1,6 @@
-from src.services.configuration_service.adapters.controller_config_service_impl import ControllerConfigServiceConfZ
-from src.services.configuration_service.service_impl import ConfigurationServiceImpl
-from src.services.midi_controller_service_impl import MidiControllerServiceImpl
+from services.configuration_service.adapters.controller_config_service_impl import ControllerConfigServiceConfZ
+from services.configuration_service.service_impl import ConfigurationServiceImpl
+from services.midi_controller_service_impl import MidiControllerServiceImpl
 
 controller_configuration_service = ControllerConfigServiceConfZ()
 configuration_service = ConfigurationServiceImpl(controller_configuration_service)

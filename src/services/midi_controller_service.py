@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.services.configuration_service.model.controller_config import ControllerConfig
+from services.configuration_service.model.controller_config import ControllerConfig
 
 
 class MidiControllerService(ABC):

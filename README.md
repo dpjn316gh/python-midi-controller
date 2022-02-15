@@ -16,3 +16,9 @@ sudo apt-get install libjack-dev
 ```
 export CONFIG_FOLDER=/home/pi/midi-controller/config/
 ```
+
+## Pytest from console
+```
+export PYTHONPATH=$PYTHONPATH:src/
+pytest tests/
+```

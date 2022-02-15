@@ -6,6 +6,7 @@ from asciimatics.screen import Screen
 from presentation.views.file_open_dialog_view import FileOpenDialogView
 from presentation.views.performance_view import PerformanceView
 from presentation.views.menu_frame import MenuFrame
+from presentation.views.performances.performances_open_dialog_view import PerformancesOpenDialogView
 from services.configuration_service.adapters.controller_config_service_impl import ControllerConfigServiceConfZ
 from services.configuration_service.service_impl import ConfigurationServiceImpl
 from services.midi_controller_service_impl import MidiControllerServiceImpl
@@ -21,7 +22,7 @@ def demo(screen, scene):
         Scene([Background(screen), MenuFrame(screen)], -1, name="Main"),
         Scene([MenuFrame(screen)], -1, name="Menu"),
         Scene([PerformanceView(screen)], -1, name="Performance"),
-        Scene([FileOpenDialogView(screen, service)], -1, name="FileOpenDialogPerformance")
+        Scene([PerformancesOpenDialogView(screen, service)], -1, name="PerformancesOpenDialog")
 
     ]
 

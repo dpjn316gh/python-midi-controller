@@ -58,7 +58,7 @@ class PerformanceView(Frame):
 
     @staticmethod
     def _open_file():
-        raise NextScene("FileOpenDialogPerformance")
+        raise NextScene("PerformancesOpenDialog")
 
     def process_event(self, event):
         if event is not None and isinstance(event, KeyboardEvent):

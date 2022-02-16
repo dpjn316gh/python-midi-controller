@@ -49,33 +49,54 @@ class PerformanceLiveView(Frame, PerformanceLivePresenterView):
                                      add_box=True,
                                      name=self.BUTTON_LOAD_PERFORMANCE_TEXT), 0)
 
-        layers_layout = Layout([1], fill_frame=True)
+        layers_layout = Layout([1], fill_frame=False)
         self.add_layout(layers_layout)
 
-        self.performance_listbox = MultiColumnListBox(32,
-                                                      [">2", ">4", "^5", ">4", ">6", ">6", ">6", ">4", ">5", "^5",
-                                                       "^4", ">3", ">6q"],
-                                                      self.render_layers_for_listbox(self.model),
-                                                      titles=["#", "Cha", "Ena", "L.Key", "U.Key", "L.Vel", "U.Vel",
-                                                              "Oct", "Tran", "F.V", "K.N", "Pro", "C.C."],
-                                                      )
+        self.layers_listbox = MultiColumnListBox(height=15,
+                                                 columns=[">2", ">4", "^5", ">4", ">6", ">6", ">6", ">4", ">5", "^5",
+                                                          "^4", ">3", ">6q"],
+                                                 options=self.render_layers_for_listbox(self.model),
+                                                 titles=["#", "Cha", "Ena", "L.Key", "U.Key", "L.Vel", "U.Vel",
+                                                         "Oct", "Tran", "F.V", "K.N", "Pro", "C.C."],
+                                                 on_change=self._on_change_layers_listbox
+                                                 )
 
         layers_layout.add_widget(Divider())
         self.performance_info_label = Label(height=4, label="", name=self.LABEL_PERFORMANCE_INFO)
 
         layers_layout.add_widget(self.performance_info_label)
-        layers_layout.add_widget(self.performance_listbox)
+
+        layers_details_layout = Layout([65, 5, 30], fill_frame=True)
+        self.add_layout(layers_details_layout)
+
+        layers_details_layout.add_widget(self.layers_listbox, 0)
+
+        self.continuous_controller_layer_listbox = MultiColumnListBox(height=15,
+                                                                      columns=["^7", "^18", "^5", "^5", "^8"],
+                                                                      options=self.render_continuous_controller_layer_for_listbox(
+                                                                          self.model, 1),
+                                                                      titles=["Layer", "Controller change", "Min",
+                                                                              "Max", "Glo. Ch."],
+                                                                      add_scroll_bar=True
+                                                                      )
+        self.continuous_controller_layer_listbox.disabled = True
+        layers_details_layout.add_widget(self.continuous_controller_layer_listbox, 2)
+
         self.fix()
 
     @staticmethod
     def _open_file():
         raise NextScene("PerformancesOpenDialog")
 
+    def _on_change_layers_listbox(self):
+        self._reload_continuous_controller_layer_listbox(self.layers_listbox.value)
+
     def _reload_frame(self, new_value=None):
         self.presenter.get_current_performance()
 
         self._reload_performance_info()
         self._reload_listbox()
+        self._reload_continuous_controller_layer_listbox(1)
         self._set_title_frame()
 
     def _reload_performance_info(self):
@@ -84,7 +105,11 @@ class PerformanceLiveView(Frame, PerformanceLivePresenterView):
                                            f"{self.model.time_signature.beats_per_bar}/{self.model.time_signature.beat_unit}"
 
     def _reload_listbox(self):
-        self.performance_listbox.options = self.render_layers_for_listbox(self.model)
+        self.layers_listbox.options = self.render_layers_for_listbox(self.model)
+
+    def _reload_continuous_controller_layer_listbox(self, layer_number: int):
+        self.continuous_controller_layer_listbox.options = self.render_continuous_controller_layer_for_listbox(
+            self.model, layer_number)
 
     def _set_title_frame(self):
         self.title = f"{self.FRAME_TITLE} - {self.model.name}"
@@ -122,4 +147,21 @@ class PerformanceLiveView(Frame, PerformanceLivePresenterView):
                     l.number
                 )
             )
+        return result
+
+    def render_continuous_controller_layer_for_listbox(self, model: PerformanceLiveViewData, layer_number: int) -> List[
+        Tuple]:
+        result = []
+
+        for l in model.layers:
+            if l.number == layer_number:
+                for i, cc in enumerate(l.controller_changes):
+                    result.append(
+                        ([str(l.number),
+                          cc.continues_controller,
+                          str(cc.min),
+                          str(cc.max),
+                          str(cc.use_global_channel)
+                          ], i))
+                break
         return result

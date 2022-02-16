@@ -28,8 +28,20 @@ class MidiControllerServiceImpl(MidiControllerService):
             self.performances_config = self.configuration_service.get_performances_config(controller_config)
         return self.performances_config
 
-    def set_current_performance_by_number_and_name(self, number: int) -> None:
+    def set_current_performance_by_number(self, number: int) -> None:
         if self.performances_config is not None:
             result = [pc for pc in self.performances_config if pc.number == number]
             if len(result) > 0:
                 self.current_performance = result[0]
+
+    def get_current_performance(self,
+                                controller_config: ControllerConfig) -> PerformanceConfig:
+        if self.current_performance is not None:
+            return self.current_performance
+        else:
+            self.get_performances_config(controller_config)
+            result = [pc for pc in self.performances_config if pc.number == controller_config.default_performance]
+            if len(result) > 0:
+                self.current_performance = result[0]
+                return self.current_performance
+            raise ValueError("Current performance not found")

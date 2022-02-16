@@ -29,7 +29,7 @@ class MenuFrame(Frame):
         raise NextScene("Files")
 
     def _open_performance(self):
-        raise NextScene("Performance")
+        raise NextScene("PerformanceLive")
 
     def _quit(self):
         popup = PopUpDialog(self._screen, "Are you sure?", ["Yes", "No"],

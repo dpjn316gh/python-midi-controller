@@ -28,4 +28,4 @@ class PerformancesOpenDialogPresenter:
 
     def set_selected_performance_as_current(self):
         performance_id = self.view.get_selected_performance()
-        self.service.set_current_performance_by_number_and_name(number=performance_id)
+        self.service.set_current_performance_by_number(number=performance_id)

@@ -22,5 +22,10 @@ class MidiControllerService(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def set_current_performance_by_number_and_name(self, number: int) -> None:
+    def set_current_performance_by_number(self, number: int) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_current_performance(self,
+                                controller_config: ControllerConfig) -> PerformanceConfig:
         raise NotImplementedError

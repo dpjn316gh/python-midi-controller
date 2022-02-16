@@ -9,7 +9,7 @@ from presentation.presenters.performances.performances_open_dialog_presenter_vie
 
 
 class PerformancesOpenDialogView(Frame, PerformancesOpenDialogPresenterView):
-    FRAME = "selectPerformanceDialog"
+    FRAME = "select_performance_dialog"
     FRAME_TITLE = "Select performance..."
     LISTBOX_PERFORMANCES = "performances_listbox"
     LABEL_DESCRIPTION = "description_label"
@@ -69,7 +69,7 @@ class PerformancesOpenDialogView(Frame, PerformancesOpenDialogPresenterView):
 
     @staticmethod
     def _on_click_cancel_button():
-        raise NextScene("Performance")
+        raise NextScene("PerformanceLive")
 
     def _on_click_ok_button(self):
         self.presenter.set_selected_performance_as_current()
@@ -91,10 +91,10 @@ class PerformancesOpenDialogView(Frame, PerformancesOpenDialogPresenterView):
 
         return super(PerformancesOpenDialogView, self).process_event(event)
 
-    def reset(self):
-        # Do standard reset to clear out form, then populate with new data.
-        super(PerformancesOpenDialogView, self).reset()
-        self.data = None
+    # def reset(self):
+    #     # Do standard reset to clear out form, then populate with new data.
+    #     super(PerformancesOpenDialogView, self).reset()
+    #     self.data = None
 
     def set_performances_list(self, models: PerformancesOpenDialogViewDataList):
         self.models = models

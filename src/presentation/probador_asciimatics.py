@@ -5,9 +5,10 @@ from asciimatics.exceptions import StopApplication
 from asciimatics.scene import Scene
 from asciimatics.screen import Screen
 from asciimatics.widgets import Frame, Layout, Button, ListBox, Label, Divider
+from rtmidi.midiutil import open_midiport, list_output_ports, list_input_ports, list_available_ports
 
 
-class PerformancesOpenDialogView(Frame):
+class MidiInterfaceDialogView(Frame):
     opciones = [("Piano", 1),
                 ("Piano y String", 2),
                 ("Sintetizador", 3),
@@ -34,7 +35,7 @@ class PerformancesOpenDialogView(Frame):
     LABEL_INFO_TEXT = "(q) Close window, (TAB) Switch controls, (Up/Down key) - Select performance"
 
     def __init__(self, screen, service):
-        super(PerformancesOpenDialogView, self).__init__(screen,
+        super(MidiInterfaceDialogView, self).__init__(screen,
                                          height=26,
                                          width=80,
                                          has_border=True,
@@ -44,6 +45,9 @@ class PerformancesOpenDialogView(Frame):
         self.set_layout()
 
     def set_layout(self):
+
+        result = list_input_ports()
+
         layout_top = Layout([1], fill_frame=False)
         self.add_layout(layout_top)
         layout_top.add_widget(ListBox(height=10,
@@ -76,6 +80,8 @@ class PerformancesOpenDialogView(Frame):
 
         self.fix()
 
+
+
     @staticmethod
     def _on_click_cancel_button():
         raise StopApplication("User requested exit")
@@ -98,7 +104,7 @@ class PerformancesOpenDialogView(Frame):
             if event.key_code in [81, 113]:
                 self._on_click_cancel_button()
 
-        return super(PerformancesOpenDialogView, self).process_event(event)
+        return super(MidiInterfaceDialogView, self).process_event(event)
 
 
 
@@ -106,7 +112,7 @@ class PerformancesOpenDialogView(Frame):
 
 def demo(screen, scene):
     scenes = [
-        Scene([Background(screen), PerformancesOpenDialogView(screen, None)], -1, name="Main"),
+        Scene([Background(screen), MidiInterfaceDialogView(screen, None)], -1, name="Main"),
 
     ]
 

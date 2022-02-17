@@ -35,7 +35,6 @@ class PerformanceLiveView(Frame, PerformanceLivePresenterView):
                                                   has_border=True,
                                                   can_scroll=False,
                                                   name=self.FRAME,
-
                                                   on_load=self._reload_frame)
 
         self.set_layout()

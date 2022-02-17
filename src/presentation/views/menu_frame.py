@@ -37,8 +37,7 @@ class MenuFrame(Frame):
         self._scene.add_effect(popup)
 
     def _open_midi_interfaces(self):
-        popup = PopupMenu(self._screen,[('elemento 1', self._menu_1), ('elemento 2', self._menu_2)], 5, 5)
-        self._scene.add_effect(popup)
+        raise NextScene("MidiInterfaceDialog")
 
     def _menu_1(self):
         self.screen.refresh()

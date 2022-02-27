@@ -1,28 +1,40 @@
+import logging
+import queue
+import sys
+import threading
+import time
+
+from asciimatics.constants import COLOUR_GREEN, A_BOLD
 from asciimatics.effects import Background
 from asciimatics.event import KeyboardEvent
 from asciimatics.exceptions import ResizeScreenError
 from asciimatics.exceptions import StopApplication
 from asciimatics.scene import Scene
 from asciimatics.screen import Screen
-from asciimatics.widgets import Frame, Layout, Button, ListBox, Label, Divider
-from rtmidi.midiutil import open_midiport, list_output_ports, list_input_ports, list_available_ports
+from asciimatics.widgets import Frame, Layout, Button, Label, Divider
+
+log = logging.getLogger("midifilter")
+
+
+class MidiDispatcher(threading.Thread):
+    def __init__(self):
+        super(MidiDispatcher, self).__init__()
+        self._wallclock = time.time()
+        self.queue = queue.Queue()
+        self.halt = False
+
+    def run(self):
+        log.debug("Start...")
+        while True and not self.halt:
+            log.debug("Start...")
+            # time.sleep(1000)
+
+    def stop(self):
+        self.halt = True
+        log.debug("Stop...")
 
 
 class MidiInterfaceDialogView(Frame):
-    opciones = [("Piano", 1),
-                ("Piano y String", 2),
-                ("Sintetizador", 3),
-                ("Coro Gospel", 4),
-                ("Bluse Band", 5),
-                ("ACDC", 6),
-                ("Amanecer de nuevo", 7),
-                ("Colombiana", 8),
-                ("Salsa", 9),
-                ("Merengue", 10),
-                ("Reguee", 11),
-                ("Funk!", 12),
-                ]
-
     FRAME = "selectPerformanceDialog"
     FRAME_TITLE = "Select performance..."
     LISTBOX_PERFORMANCES = "performances_listbox"
@@ -36,31 +48,37 @@ class MidiInterfaceDialogView(Frame):
 
     def __init__(self, screen, service):
         super(MidiInterfaceDialogView, self).__init__(screen,
-                                         height=26,
-                                         width=80,
-                                         has_border=True,
-                                         can_scroll=False,
-                                         name=self.FRAME,
-                                         title=self.FRAME_TITLE)
+                                                      height=10,
+                                                      width=150,
+                                                      has_border=True,
+                                                      can_scroll=False,
+                                                      name=self.FRAME,
+                                                      title=self.FRAME_TITLE, reduce_cpu=False)
+
         self.set_layout()
+        self.dispatcher = MidiDispatcher()
+
+        self.tempo_clock = time.time()
+        self.tempo_thread = threading.Thread(target=self.update_tempo_widget)
+        self.stop_tempo_thread = True
+        self.tempo_thread_lock = threading.Lock()
+        self.bmp = 60
+        self.tap_tempo_stats = []
 
     def set_layout(self):
 
-        result = list_input_ports()
+        self.layout_middle = Layout([1])
+        self.add_layout(self.layout_middle)
 
-        layout_top = Layout([1], fill_frame=False)
-        self.add_layout(layout_top)
-        layout_top.add_widget(ListBox(height=10,
-                                      options=self.opciones,
-                                      name=self.LISTBOX_PERFORMANCES,
-                                      add_scroll_bar=True,
-                                      on_change=self._on_change_performances_listbox), 0)
+        self.status_label_1 = Label(height=1, label="", )
 
-        layout_middle = Layout([1])
-        self.add_layout(layout_middle)
-        layout_middle.add_widget(Divider(), 0)
-        layout_middle.add_widget(Label(height=10, label="", name=self.LABEL_DESCRIPTION), 0)
-        layout_middle.add_widget(Divider(), 0)
+        self.user_tempo_label = Label(height=1, label="")
+        self.status_tempo_label = Label(height=1, label="", name=self.LABEL_DESCRIPTION)
+
+        self.layout_middle.add_widget(self.user_tempo_label, 0)
+        self.layout_middle.add_widget(self.status_label_1, 0)
+        self.layout_middle.add_widget(self.status_tempo_label, 0)
+        self.layout_middle.add_widget(Divider(), 0)
 
         layout_bottom = Layout([2, 2])
         self.add_layout(layout_bottom)
@@ -72,42 +90,109 @@ class MidiInterfaceDialogView(Frame):
                                         on_click=self._on_click_cancel_button,
                                         add_box=True,
                                         name=self.BUTTON_CANCEL), 1)
-
-        layout_bottom_1 = Layout([1])
-        self.add_layout(layout_bottom_1)
-
-        layout_bottom_1.add_widget(Label(height=10, label=self.LABEL_INFO_TEXT, name=self.LABEL_INFO), 0)
-
         self.fix()
 
+    def update_tempo_widget(self):
+        with self.tempo_thread_lock:
+            self.stop_tempo_thread = False
 
+            count = 1
+            sub_divisions = 2
+            while True:
+                if count > 4 * sub_divisions:
+                    count = 1
+                    msg = ""
+                if (count - 1) % sub_divisions == 0:
+                    new_time = time.time()
+                    current_bmp = 60. / (new_time - self.tempo_clock)
+                    msg = f"{count // sub_divisions + 1}"
+                else:
+                    msg += "."
+                self.status_tempo_label.text = f"Real BPM:{current_bmp:.2f}   {msg:>{count}}"
+                count += 1
+                self.tempo_clock = new_time
+
+                if self.stop_tempo_thread:
+                    return
+
+                w = 60.0 / self.bmp / sub_divisions
+                time.sleep(w)
 
     @staticmethod
     def _on_click_cancel_button():
         raise StopApplication("User requested exit")
 
     def _on_click_ok_button(self):
-        # salvar elemento
         self._on_click_cancel_button()
-
-    def _on_change_performances_listbox(self):
-        listbox_performances = self.find_widget(self.LISTBOX_PERFORMANCES)
-        label_description = self.find_widget(self.LABEL_DESCRIPTION)
-
-        for e in self.opciones:
-            if e[1] == listbox_performances.value:
-                label_description.text = str(e[0]) + "DESCRIPTION"
-                break
 
     def process_event(self, event):
         if event is not None and isinstance(event, KeyboardEvent):
-            if event.key_code in [81, 113]:
+            if event.key_code in [81, 113]:  # Q
+                if self.tempo_thread.is_alive():
+                    self.stop_tempo_thread = True
+                    self.tempo_thread.join()
                 self._on_click_cancel_button()
+            if event.key_code in [82, 114]:  # R
+
+                if not self.tempo_thread.is_alive():
+                    self.tempo_thread = threading.Thread(target=self.update_tempo_widget)
+                    self.tempo_thread.start()
+                # if not self.dispatcher.is_alive():
+                #     self.dispatcher.start()
+            if event.key_code in [83, 115]:  # R
+                if self.tempo_thread.is_alive():
+                    self.stop_tempo_thread = True
+                    self.tempo_thread.join()
+                # self.dispatcher.stop()
+                # self.dispatcher.join()
+
+            if event.key_code == 49:  # 1
+                self.bmp = min(250, max(30, int(self.bmp) - 1))
+                self.user_tempo_label.text = f"BMP: {self.bmp}"
+            if event.key_code == 50:  # 2
+                self.bmp = min(250, max(30, int(self.bmp) + 1))
+                self.user_tempo_label.text = f"BMP: {self.bmp}"
+
+            if event.key_code in [84, 116]:  # t
+                current_time = time.time()
+                self.tap_tempo_stats.append(current_time)
+                if len(self.tap_tempo_stats) > 1:
+                    seconds_per_pulse_sum = 0
+                    bmp_sum = 0
+                    min_diff = sys.maxsize
+                    max_diff = 0
+                    for i in range(len(self.tap_tempo_stats) - 1):
+                        diff = abs(self.tap_tempo_stats[i] - self.tap_tempo_stats[i + 1])
+                        if diff > max_diff:
+                            max_diff = diff
+                        if diff < min_diff:
+                            min_diff = diff
+                        seconds_per_pulse_sum += diff
+                        bmp_sum += 60 / abs(self.tap_tempo_stats[i] - self.tap_tempo_stats[i + 1])
+
+                    seconds_per_pulse_avg = 60 * (len(self.tap_tempo_stats) - 1) / seconds_per_pulse_sum
+                    bmp_avg = bmp_sum / (len(self.tap_tempo_stats) - 1)
+                    seconds_per_pulse_and_bmp_avg = (seconds_per_pulse_avg + bmp_avg) / 2
+
+                    self.user_tempo_label.text = f"Seconds per pulse avg: {seconds_per_pulse_avg:.2f}. BPM avg: {bmp_avg:.2f}. {seconds_per_pulse_and_bmp_avg:.2f}. [{len(self.tap_tempo_stats)}] " \
+                                                 f"Min: {min_diff:.2f}. Max: {max_diff:.2f}. {self.tap_tempo_stats[-2]:.2f} {self.tap_tempo_stats[-1]:.2f} "
+                    self.bmp = bmp_avg
+
+                if len(self.tap_tempo_stats) >= 10:
+                    self.tap_tempo_stats = self.tap_tempo_stats[1:]
+
+                percentage = 0
+                if len(self.tap_tempo_stats) >= 8:
+                    if not abs(self.tap_tempo_stats[-2] - current_time) < max_diff * (1 + percentage):
+                        self.tap_tempo_stats.clear()
+                        # self.tap_tempo_stats.append(current_time)
 
         return super(MidiInterfaceDialogView, self).process_event(event)
 
-
-
+    @property
+    def frame_update_count(self):
+        # Refresh once every 2 seconds by default.
+        return 1
 
 
 def demo(screen, scene):
@@ -123,6 +208,7 @@ last_scene = None
 while True:
     try:
         Screen.wrapper(demo, catch_interrupt=False, arguments=[last_scene])
+
         quit()
     except ResizeScreenError as e:
         last_scene = e.scene

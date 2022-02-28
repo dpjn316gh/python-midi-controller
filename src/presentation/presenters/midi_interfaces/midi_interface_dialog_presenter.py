@@ -20,11 +20,11 @@ class MidiInterfaceDialogPresenter:
 
     def set_io_ports(self):
         selected_io_ports = self.view.get_io_ports()
-        midi_ports = MidiPorts(input_ports=selected_io_ports.input_ports, output_ports=selected_io_ports.output_ports)
+        midi_ports = MidiPorts(input_ports_names=selected_io_ports.input_ports, output_ports_names=selected_io_ports.output_ports)
         self.service.set_midi_ports(midi_ports)
 
     def get_io_ports(self):
         midi_ports = self.service.get_midi_ports()
-        selected_io_ports = MidiInterfaceViewData(input_ports=midi_ports.input_ports,
-                                                  output_ports=midi_ports.output_ports)
+        selected_io_ports = MidiInterfaceViewData(input_ports=midi_ports.input_ports_names,
+                                                  output_ports=midi_ports.output_ports_names)
         self.view.set_io_ports(selected_io_ports)

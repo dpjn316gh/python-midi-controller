@@ -115,8 +115,14 @@ class PerformanceLiveView(Frame, PerformanceLivePresenterView):
 
     def process_event(self, event):
         if event is not None and isinstance(event, KeyboardEvent):
-            if event.key_code in [81, 113]:
+            if event.key_code in [81, 113]: # Q
                 raise NextScene("Menu")
+
+            if event.key_code in [82, 114]: # R
+                self.presenter.run_midi_controller()
+
+            if event.key_code in [83, 115]: # S
+                self.presenter.stop_midi_controller()
 
         return super(PerformanceLiveView, self).process_event(event)
 

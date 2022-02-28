@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+from midifilter.filters import MidiFilter
 from services.configuration_service.model.controller_config import ControllerConfig
 from services.configuration_service.model.performance_config import PerformanceConfig
 from services.midi_interface_service.model.midi_ports import MidiPorts
@@ -32,6 +33,10 @@ class MidiControllerService(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def get_filters_for_current_performance(self) -> List[MidiFilter]:
+        raise NotImplementedError
+
+    @abstractmethod
     def list_input_ports(self):
         raise NotImplementedError
 
@@ -47,4 +52,18 @@ class MidiControllerService(ABC):
     def get_midi_ports(self) -> MidiPorts:
         raise NotImplementedError
 
+    @abstractmethod
+    def open_midi_ports(self) -> bool:
+        raise NotImplementedError
 
+    @abstractmethod
+    def close_midi_ports(self) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def run_controller(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def stop_controller(self) -> None:
+        raise NotImplementedError

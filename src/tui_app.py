@@ -10,13 +10,16 @@ from presentation.views.performances.performances_open_dialog_view import Perfor
 from services.configuration_service.adapters.controller_config_service_impl import ControllerConfigServiceConfZ
 from services.configuration_service.service_impl import ConfigurationServiceImpl
 from services.midi_controller_service_impl import MidiControllerServiceImpl
+from services.midi_filter_builder_service.adapters.service_impl import MidiFilterBuilderServiceImpl
 from services.midi_interface_service.adapters.service_impl import MidiInterfaceServiceImpl
 
 controller_configuration_service = ControllerConfigServiceConfZ()
 configuration_service = ConfigurationServiceImpl(controller_configuration_service)
 midi_interface_service = MidiInterfaceServiceImpl()
+midi_filter_builder_service=MidiFilterBuilderServiceImpl()
 service = MidiControllerServiceImpl(configuration_service=configuration_service,
-                                    midi_interface_service=midi_interface_service)
+                                    midi_interface_service=midi_interface_service,
+                                    midi_filter_builder_service=midi_filter_builder_service)
 
 service.start_service()
 

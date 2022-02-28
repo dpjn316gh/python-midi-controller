@@ -15,3 +15,11 @@ class PerformanceLivePresenter:
         performance_config = self.service.get_current_performance(controller_config)
         current_performance = PerformanceLiveViewData(**performance_config.dict())
         self.view.set_current_performance(current_performance)
+
+    def run_midi_controller(self):
+        self.service.open_midi_ports()
+        self.service.run_controller()
+
+    def stop_midi_controller(self):
+        self.service.stop_controller()
+        self.service.close_midi_ports()

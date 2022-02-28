@@ -97,7 +97,7 @@ class MidiInterfaceDialogView(Frame):
             self.stop_tempo_thread = False
 
             count = 1
-            sub_divisions = 2
+            sub_divisions = 1
             while True:
                 if count > 4 * sub_divisions:
                     count = 1

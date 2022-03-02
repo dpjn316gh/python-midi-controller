@@ -4,6 +4,11 @@
 
 ## Installing
 ```
+
+sudo apt install liblo-dev
+sudo apt-get install libasound2-dev
+sudo apt-get install libjack-jackd2-dev
+
 poetry shell
 poetry update
 pip install cryptography

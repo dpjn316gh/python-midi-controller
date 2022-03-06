@@ -1,5 +1,5 @@
 number: 1
-name: The first Virtual Midi Controller performance
+name: For Patches or Performances (Only global channel)
 tempo_config:
   min_bpm: 60
   max_bpm: 70
@@ -12,15 +12,6 @@ layers:
     channel: 0
     note_range_config:
       lower_key: "C-1"
-      upper_key: "B2"
-    velocity_range_config:
-      max_velocity: 127
-      min_velocity: 0
-  - number: 2
-    active: True
-    channel: 1
-    note_range_config:
-      lower_key: "C3"
       upper_key: "G9"
     velocity_range_config:
       max_velocity: 127
@@ -28,23 +19,13 @@ layers:
     controller_changes:
       - continues_controller: "SUSTAIN"
         min: 0
-        max: 127   
-  - number: 3
-    active: True
-    channel: 2
-    octave: 2
-    note_range_config:
-      lower_key: "C3"
-      upper_key: "G9"
-    velocity_range_config:
-      max_velocity: 127
-      min_velocity: 50      
-  - number: 4
-    active: True
-    channel: 3
-    note_range_config:
-      lower_key: "C3"
-      upper_key: "G9"
-    velocity_range_config:
-      max_velocity: 127
-      min_velocity: 95      
+        max: 127
+        use_global_channel: True
+      - continues_controller: "VOLUME"
+        min: 0
+        max: 127
+        use_global_channel: True
+      - continues_controller: "EXPRESSION"
+        min: 0
+        max: 127
+        use_global_channel: True

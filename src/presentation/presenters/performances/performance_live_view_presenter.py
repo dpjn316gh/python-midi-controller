@@ -18,8 +18,17 @@ class PerformanceLivePresenter:
 
     def run_midi_controller(self):
         self.service.open_midi_ports()
-        self.service.run_controller()
+        self.service.run_controller(on_midi_in_event_callback=self.on_midi_in_event_callback,
+                                    on_midi_out_event_callback=self.on_midi_out_event_callback)
 
     def stop_midi_controller(self):
         self.service.stop_controller()
         self.service.close_midi_ports()
+
+    def on_midi_in_event_callback(self, event):
+        self.view.write_midi_in_events(event)
+
+    def on_midi_out_event_callback(self, event):
+        self.view.write_midi_out_events(event)
+
+

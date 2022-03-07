@@ -1,4 +1,4 @@
-# midi-controller
+# Python midi-controller
 
 
 
@@ -20,6 +20,7 @@ sudo apt-get install libjack-dev
 ## Running
 ```
 export CONFIG_FOLDER=/home/pi/midi-controller/config/
+python src/tui_app.py 
 ```
 
 ## Pytest from console

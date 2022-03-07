@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Callable
 
 from midifilter.filters import MidiFilter
 from services.configuration_service.model.controller_config import ControllerConfig
@@ -82,9 +82,14 @@ class MidiControllerServiceImpl(MidiControllerService):
         self.midi_interface_service.close_midi_ports(midi_ports=self.midi_ports)
         return True
 
-    def run_controller(self) -> None:
+    def run_controller(self,
+                       on_midi_in_event_callback: Callable[[str], None],
+                       on_midi_out_event_callback: Callable[[str], None]) -> None:
         midi_filters = self.get_filters_for_current_performance()
-        self.midi_interface_service.run_midi_dispatcher(midi_ports=self.midi_ports, midi_filters=midi_filters)
+        self.midi_interface_service.run_midi_dispatcher(midi_ports=self.midi_ports,
+                                                        midi_filters=midi_filters,
+                                                        on_midi_in_event_callback=on_midi_in_event_callback,
+                                                        on_midi_out_event_callback=on_midi_out_event_callback)
 
     def stop_controller(self) -> None:
         self.midi_interface_service.stop_midi_dispatcher()

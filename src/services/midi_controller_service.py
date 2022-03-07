@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Callable
 
 from midifilter.filters import MidiFilter
 from services.configuration_service.model.controller_config import ControllerConfig
@@ -61,7 +61,10 @@ class MidiControllerService(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def run_controller(self) -> None:
+    def run_controller(self,
+                       on_midi_in_event_callback: Callable[[str], None],
+                       on_midi_out_event_callback: Callable[[str], None]
+                       ) -> None:
         raise NotImplementedError
 
     @abstractmethod

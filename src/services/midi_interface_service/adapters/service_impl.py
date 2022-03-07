@@ -1,4 +1,6 @@
-from typing import List
+import threading
+from queue import Queue
+from typing import List, Callable
 
 import rtmidi
 from rtmidi.midiutil import get_api_from_environment, open_midiport
@@ -9,8 +11,53 @@ from services.midi_interface_service.model.midi_ports import MidiPorts
 from services.midi_interface_service.ports.service import MidiInterfaceService
 
 
+class MidiInEventConsumer(threading.Thread):
+
+    def __init__(self, queue: Queue, on_midi_in_event_callback: Callable[[str], None]):
+        threading.Thread.__init__(self)
+        self.halt = False
+        self.queue = queue
+        self.on_midi_in_event_callback = on_midi_in_event_callback
+
+    def run(self):
+        while True and not self.halt:
+            event = self.queue.get()
+            self.queue.task_done()
+            self.on_midi_in_event_callback(event)
+
+    def stop(self):
+        self.halt = True
+        self.queue.put(None)
+
+
+class MidiOutEventConsumer(threading.Thread):
+
+    def __init__(self, queue: Queue, on_midi_out_event_callback: Callable[[str], None]):
+        threading.Thread.__init__(self)
+        self.halt = False
+        self.queue = queue
+        self.on_midi_out_event_callback = on_midi_out_event_callback
+
+    def run(self):
+        while True and not self.halt:
+            event = self.queue.get()
+            self.queue.task_done()
+            self.on_midi_out_event_callback(event)
+
+    def stop(self):
+        self.halt = True
+        self.queue.put(None)
+
+
 class MidiInterfaceServiceImpl(MidiInterfaceService):
     dispatcher: MidiDispatcherV2 = None
+
+    def __init__(self):
+        self.midi_out_event_listener = None
+        self.midi_in_event_listener = None
+        self.__controller_running = False
+        self.on_midi_in_events_queue = Queue()
+        self.on_midi_out_events_queue = Queue()
 
     def list_input_ports(self) -> List[str]:
         api = get_api_from_environment(rtmidi.API_UNSPECIFIED)
@@ -44,10 +91,24 @@ class MidiInterfaceServiceImpl(MidiInterfaceService):
 
         midi_ports.output_ports = []
 
-    def run_midi_dispatcher(self, midi_ports: MidiPorts, midi_filters: List[MidiFilter]):
+    def run_midi_dispatcher(self,
+                            midi_ports: MidiPorts,
+                            midi_filters: List[MidiFilter],
+                            on_midi_in_event_callback: Callable[[str], None],
+                            on_midi_out_event_callback: Callable[[str], None]):
         if len(midi_ports.input_ports) > 0 and len(midi_ports.output_ports) > 0:
-            if self.dispatcher is None:
-                self.dispatcher = MidiDispatcherV2(midi_ports.input_ports, midi_ports.output_ports[0], *midi_filters)
+            if self.dispatcher is None and not self.__controller_running:
+                self.midi_in_event_listener = MidiInEventConsumer(self.on_midi_in_events_queue, on_midi_in_event_callback)
+                self.midi_out_event_listener = MidiOutEventConsumer(self.on_midi_out_events_queue, on_midi_out_event_callback)
+
+                self.midi_in_event_listener.start()
+                self.midi_out_event_listener.start()
+                self.dispatcher = MidiDispatcherV2(midi_ports.input_ports,
+                                                   midi_ports.output_ports[0],
+                                                   self.on_midi_in_events_queue,
+                                                   self.on_midi_out_events_queue,
+                                                   *midi_filters)
+                self.__controller_running = True
                 self.dispatcher.start()
 
     def stop_midi_dispatcher(self):
@@ -55,3 +116,10 @@ class MidiInterfaceServiceImpl(MidiInterfaceService):
             self.dispatcher.stop()
             self.dispatcher.join()
             self.dispatcher = None
+            self.midi_in_event_listener.stop()
+            self.midi_in_event_listener.join()
+            self.midi_out_event_listener.stop()
+            self.midi_out_event_listener.join()
+            self.midi_in_event_listener = None
+            self.midi_out_event_listener = None
+            self.__controller_running = False

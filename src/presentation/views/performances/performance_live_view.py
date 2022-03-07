@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 from asciimatics.event import KeyboardEvent
 from asciimatics.exceptions import NextScene
-from asciimatics.widgets import Frame, Layout, MultiColumnListBox, Button, Divider, Label
+from asciimatics.widgets import Frame, Layout, MultiColumnListBox, Button, Divider, Label, TextBox
 
 from presentation.models.performances.performance_live_view_data import PerformanceLiveViewData
 from presentation.presenters.performances.performance_live_view_presenter import PerformanceLivePresenter
@@ -81,6 +81,16 @@ class PerformanceLiveView(Frame, PerformanceLivePresenterView):
         self.continuous_controller_layer_listbox.disabled = True
         layers_details_layout.add_widget(self.continuous_controller_layer_listbox, 2)
 
+        midi_monitor_layout = Layout([1], fill_frame=False)
+        self.add_layout(midi_monitor_layout)
+        self.midi_in_events_textbox = TextBox(10, label="Midi input", as_string=True, readonly=True)
+        self.midi_in_events_textbox.value = ""
+        self.midi_out_events_textbox = TextBox(10, label="Midi output", as_string=True, readonly=True)
+        self.midi_out_events_textbox.value = ""
+        midi_monitor_layout.add_widget(self.midi_in_events_textbox)
+        midi_monitor_layout.add_widget(self.midi_out_events_textbox)
+
+
         self.fix()
 
     @staticmethod
@@ -115,13 +125,14 @@ class PerformanceLiveView(Frame, PerformanceLivePresenterView):
 
     def process_event(self, event):
         if event is not None and isinstance(event, KeyboardEvent):
-            if event.key_code in [81, 113]: # Q
+            if event.key_code in [81, 113]:  # Q
+                self.presenter.stop_midi_controller()
                 raise NextScene("Menu")
 
-            if event.key_code in [82, 114]: # R
+            if event.key_code in [82, 114]:  # R
                 self.presenter.run_midi_controller()
 
-            if event.key_code in [83, 115]: # S
+            if event.key_code in [83, 115]:  # S
                 self.presenter.stop_midi_controller()
 
         return super(PerformanceLiveView, self).process_event(event)
@@ -170,3 +181,14 @@ class PerformanceLiveView(Frame, PerformanceLivePresenterView):
                           ], i))
                 break
         return result
+
+    def write_midi_in_events(self, event: str):
+        self.midi_in_events_textbox.value = f"{self.midi_in_events_textbox.value}\n{event}"
+
+    def write_midi_out_events(self, event: str):
+        self.midi_out_events_textbox.value = f"{self.midi_out_events_textbox.value}\n{event}"
+
+    @property
+    def frame_update_count(self):
+        # Refresh once every 2 seconds by default.
+        return 1

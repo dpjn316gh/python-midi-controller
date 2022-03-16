@@ -1,0 +1,55 @@
+number: 7
+name: Hammond B3
+tempo_config:
+  min_bpm: 60
+  max_bpm: 70
+time_signature:
+  beats_per_bar: 4
+  beat_unit: 4
+layers:
+  - number: 1
+    active: True
+    channel: 1
+    octave: -1
+    note_range_config:
+      lower_key: "C4"
+      upper_key: "G9"
+    velocity_range_config:
+      max_velocity: 127
+      min_velocity: 0
+    controller_changes:
+      - continues_controller: "SUSTAIN"
+        min: 0
+        max: 127
+        use_global_channel: True
+      - continues_controller: "VOLUME"
+        min: 0
+        max: 127
+        use_global_channel: True
+      - continues_controller: "EXPRESSION"
+        min: 0
+        max: 127
+        use_global_channel: True
+  - number: 2
+    active: True
+    channel: 2
+    octave: -1
+    note_range_config:
+      lower_key: "C-1"
+      upper_key: "B3"
+    velocity_range_config:
+      max_velocity: 127
+      min_velocity: 0
+    controller_changes:
+      - continues_controller: "SUSTAIN"
+        min: 0
+        max: 127
+        use_global_channel: True
+      - continues_controller: "VOLUME"
+        min: 0
+        max: 127
+        use_global_channel: True
+      - continues_controller: "EXPRESSION"
+        min: 0
+        max: 127
+        use_global_channel: True

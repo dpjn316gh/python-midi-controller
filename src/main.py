@@ -1,15 +1,14 @@
 import logging
 import sys
 import time
-from adapters.mappers.filters_builder import FiltersBuilder
 
+from confz import validate_all_configs
 from rtmidi.midiutil import open_midiport
-from midifilter.filter import MidiDispatcher
 
+from adapters.mappers.filters_builder import FiltersBuilder
+from midifilter.filter import MidiDispatcher
 from model.configuration.configuration_manager import load_performances_config
 from model.configuration.controller_config import ControllerConfig
-from confz import validate_all_configs
-
 
 validate_all_configs()
 
@@ -24,8 +23,8 @@ filters = filters_builder.build_filters_from_performance(default_performance)
 
 print(filters)
 
-def ask_yesno(question, default=True):
 
+def ask_yesno(question, default=True):
     yes = {'yes', 'y'}
     no = {'no', 'n'}  # pylint: disable=invalid-name
 
@@ -42,10 +41,10 @@ def ask_yesno(question, default=True):
         else:
             print("Please respond by yes or no.")
 
+
 # open a file
 def main():
-
-    level =logging.DEBUG if True else logging.INFO
+    level = logging.DEBUG if True else logging.INFO
     logging.basicConfig(format="%(name)s: %(levelname)s - %(message)s", level=level)
 
     try:
@@ -55,14 +54,13 @@ def main():
             midiins.append(midiin)
             if not ask_yesno("Would you like to add another input port (y/N)?", False):
                 break
-        
+
         midiout, outport_name = open_midiport(None, "output")
     except IOError as exc:
         print(exc)
         return 1
     except (EOFError, KeyboardInterrupt):
         return 0
-
 
     dispatcher = MidiDispatcher(midiins, midiout, *filters)
 
@@ -89,5 +87,3 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main() or 0)
-
-

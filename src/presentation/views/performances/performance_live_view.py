@@ -183,10 +183,12 @@ class PerformanceLiveView(Frame, PerformanceLivePresenterView):
         return result
 
     def write_midi_in_events(self, event: str):
-        self.midi_in_events_textbox.value = f"{self.midi_in_events_textbox.value}\n{event}"
+        # self.midi_in_events_textbox.value = f"{self.midi_in_events_textbox.value}\n{event}"
+        self.midi_in_events_textbox.value = f"{event}"
 
     def write_midi_out_events(self, event: str):
-        self.midi_out_events_textbox.value = f"{self.midi_out_events_textbox.value}\n{event}"
+        # self.midi_out_events_textbox.value = f"{self.midi_out_events_textbox.value}\n{event}"
+        self.midi_out_events_textbox.value = f"{event}"
 
     @property
     def frame_update_count(self):
